@@ -18,8 +18,7 @@
 #/public/storage
 
 # Track storage/app/public
-!/storage/app/public/
-!/storage/app/public/**
+
 
 /storage/*.key
 /storage/pail

@@ -432,36 +432,46 @@
       </div>
     </nav>
      {{-- GRID 3 KOLOM --}}
-    <div class="row g-4">
-        @foreach ($bukus as $b)
-        <div class="col-6 col-md-3 col-lg-3">
-            <div class="card-book shadow-sm">
+<div class="row g-4">
+    @foreach ($bukus as $b)
+    <div class="col-6 col-md-3 col-lg-3">
+        <div class="card-book shadow-sm">
 
-                {{-- COVER --}}
-                <img 
-                    src="{{ $b->gambar ? secure_asset('storage/'.$b->gambar) : secure_asset('assets/img/no-cover.png') }}"
-                    class="card-cover"
-                    alt="Cover {{ $b->judul }}">
+            {{-- COVER --}}
+            @php
+                // Ambil nama file dari database (hilangkan folder lamanya)
+                $imgFile = basename($b->gambar ?? '');
 
-                {{-- BODY --}}
-                <div class="card-body">
-                    <h5 class="title-book">{{ $b->judul }}</h5>
-                    <p class="meta-book mb-1">{{ $b->penulis }}</p>
-                    <p class="price">Rp {{ number_format($b->harga, 0, ',', '.') }}</p>
+                // Path final ke folder baru di public/images/buku
+                $imgUrl = $imgFile
+                    ? asset('images/buku/' . $imgFile)
+                    : asset('images/no-cover.png');
+            @endphp
 
-                    {{-- ACTION --}}
-                    <form action="{{ route('cart.add', $b->id) }}" method="POST">
-                        @csrf
-                        <button class="btn btn-primary w-100 mt-2">
-                            <i class="bi bi-cart-plus"></i> Tambah ke Keranjang
-                        </button>
-                    </form>
-                </div>
+            <img src="{{ $imgUrl }}"
+                 alt="Cover {{ $b->judul }}"
+                 class="card-cover">
 
+            {{-- BODY --}}
+            <div class="card-body">
+                <h5 class="title-book">{{ $b->judul }}</h5>
+                <p class="meta-book mb-1">{{ $b->penulis }}</p>
+                <p class="price">Rp {{ number_format($b->harga, 0, ',', '.') }}</p>
+
+                {{-- ACTION --}}
+                <form action="{{ route('cart.add', $b->id) }}" method="POST">
+                    @csrf
+                    <button class="btn btn-primary w-100 mt-2">
+                        <i class="bi bi-cart-plus"></i> Tambah ke Keranjang
+                    </button>
+                </form>
             </div>
+
         </div>
-        @endforeach
     </div>
+    @endforeach
+</div>
+
 
     {{-- KOSONG --}}
     @if ($bukus->isEmpty())

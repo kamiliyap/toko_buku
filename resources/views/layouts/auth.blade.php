@@ -7,6 +7,9 @@
 
     {{-- Tambahkan CSS Bootstrap kalau diperlukan --}}
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+    
+    {{-- tempat css halaman --}}
+    @yield('styles')
 </head>
 <body class="bg-light">
 

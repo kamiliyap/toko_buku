@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use App\Models\Buku;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Storage;
+
 
 class HomeController extends Controller
 {
@@ -58,6 +60,20 @@ class HomeController extends Controller
          *    Diambil dari: public/images/poster
          * ----------------------------- */
         $posterFiles = [];
+        $posterFiles = [];
+
+        $all = Storage::disk('public')->files('poster');
+
+        $posterFiles = collect($all)
+            ->filter(function ($f) {
+                return preg_match('/\.(jpe?g|png|gif|webp)$/i', $f);
+            })
+            ->map(function ($f) {
+                return basename($f); // ambil hanya nama file, bukan full path
+            })
+            ->values()
+            ->all();
+
         $posterDir = public_path('images/poster');
 
         if (is_dir($posterDir)) {

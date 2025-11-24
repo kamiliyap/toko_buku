@@ -81,11 +81,21 @@
             <label class="form-label">Gambar (opsional)</label>
             @if(isset($b) && $b->gambar)
                 <div class="mb-2">
-                    <img src="{{ asset('assets/img/'.$b->gambar) }}"
-                         alt="Gambar Buku"
-                         style="height:120px;object-fit:cover">
-                </div>
-            @endif
+                    @if(isset($b) && $b->gambar)
+                        @php
+                            // Ambil nama file saja
+                            $imgFile = basename($b->gambar);
+
+                            // Path ke public/images/buku
+                            $imgUrl = asset('images/buku/' . $imgFile);
+                        @endphp
+
+                        <div class="mb-2">
+                            <img src="{{ $imgUrl }}"
+                                alt="Gambar Buku"
+                                style="height:120px;object-fit:cover;border-radius:6px;">
+                        </div>
+                    @endif
             <input type="file" name="gambar" class="form-control">
             @error('gambar')
                 <div class="text-danger small mt-1">{{ $message }}</div>

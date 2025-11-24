@@ -89,6 +89,119 @@
         font-size: 14px;
         white-space: nowrap;
     }
+
+    @media (max-width: 768px) {
+        .book-grid {
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+        }
+    }
+    h3 {
+    font-size: 26px;
+    font-weight: 800;
+    color: #4f46e5;            /* ungu elegan */
+    margin-bottom: 16px;
+    position: relative;
+    padding-bottom: 6px;
+    }
+
+    h3::after {
+        content: "";
+        position: absolute;
+        left: 0;
+        bottom: 0;
+        width: 60px;
+        height: 3px;
+        background: #6366f1;       /* garis highlight */
+        border-radius: 3px;
+    }
+    /* ==== FILTER BAR WRAPPER ==== */
+    .filter-bar {
+        background: #ffffff;
+        border-radius: 14px;
+        padding: 14px 16px;
+        box-shadow: 0 4px 14px rgba(15, 23, 42, 0.08);
+        border: 1px solid #e5e7eb;
+    }
+
+    /* ==== INPUT SEARCH ==== */
+    .filter-bar .form-control {
+        border-radius: 10px;
+        border: 1px solid #d1d5db;
+        padding: 10px 14px;
+        font-size: 14px;
+        transition: all .2s;
+    }
+
+    .filter-bar .form-control:focus {
+        border-color: #6366f1;         /* ungu */
+        box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.25);
+    }
+
+    /* ==== DROPDOWN BUTTON ==== */
+    .filter-bar .dropdown > button {
+        background: #f9fafb;
+        border: 1px solid #d1d5db;
+        border-radius: 10px;
+        padding: 10px 14px;
+        font-size: 14px;
+        color: #374151;
+        transition: all .2s;
+    }
+
+    .filter-bar .dropdown > button:hover {
+        background: #eef2ff;           /* ungu soft */
+        border-color: #6366f1;
+        color: #4f46e5;
+    }
+
+    /* ==== DROPDOWN MENU ==== */
+    .dropdown-checkbox {
+        max-height: 250px;
+        overflow-y: auto;
+        border-radius: 10px;
+    }
+
+    .dropdown-checkbox li:hover {
+        background: #f3f4f6;
+        border-radius: 6px;
+    }
+
+    /* ==== CHECKBOX ==== */
+    .form-check-input {
+        border: 2px solid #6b7280;
+    }
+
+    .form-check-input:checked {
+        background-color: #6366f1;
+        border-color: #6366f1;
+    }
+
+    /* ==== BUTTON TERAPKAN ==== */
+    .filter-bar .btn.btn-primary {
+        background: #6366f1;
+        border-color: #6366f1;
+        padding: 8px 14px;
+        border-radius: 10px;
+        font-weight: 600;
+    }
+
+    .filter-bar .btn.btn-primary:hover {
+        background: #4f46e5;
+    }
+
+    /* ==== BUTTON RESET ==== */
+    .filter-bar .btn.btn-outline-secondary {
+        border-radius: 10px;
+        padding: 8px 14px;
+    }
+
+    .filter-bar .btn.btn-outline-secondary:hover {
+        background: #e5e7eb;
+        color: #111827;
+    }
+
+
+
 </style>
 @endsection
 
@@ -171,7 +284,7 @@
         @foreach($books as $book)
             <div class="book-card">
                 @if($book->gambar)
-                    <img src="{{ asset('img/'.$book->gambar) }}" alt="{{ $book->judul }}">
+                    <img src="{{ asset('images/'.$book->gambar) }}" alt="{{ $book->judul }}">
                 @else
                     <img src="https://via.placeholder.com/200x210?text=No+Cover" alt="Tanpa Gambar">
                 @endif

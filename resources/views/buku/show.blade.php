@@ -19,11 +19,16 @@
       <div class="card shadow border-0">
         <div class="row g-0">
           <div class="col-md-4">
-            <img
-              src="{{ $b->gambar ? asset('storage/'.$b->gambar) : asset('assets/img/no-cover.png') }}"
-              class="img-fluid rounded-start"
-              alt="Cover Buku">
-          </div>
+            @php
+                $img = $buku->gambar ? basename($buku->gambar) : null;
+                $imgUrl = $img
+                    ? asset('images/buku/' . $img)    {{-- ambil dari public/images/buku --}}
+                    : asset('images/no-cover.png');   {{-- fallback --}}
+            @endphp
+
+            <img src="{{ $imgUrl }}"
+                alt="Cover {{ $buku->judul }}"
+                class="card-cover">
 
           <div class="col-md-8">
             <div class="card-body">

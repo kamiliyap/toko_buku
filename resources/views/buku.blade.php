@@ -171,7 +171,7 @@
         @foreach($books as $book)
             <div class="book-card">
                 @if($book->gambar)
-                    <img src="{{ asset('storage/'.$book->gambar) }}" alt="{{ $book->judul }}">
+                    <img src="{{ asset('img/'.$book->gambar) }}" alt="{{ $book->judul }}">
                 @else
                     <img src="https://via.placeholder.com/200x210?text=No+Cover" alt="Tanpa Gambar">
                 @endif

@@ -1,25 +1,18 @@
 {{-- resources/views/home.blade.php --}}
 @extends('layouts.user')
 
-
 @section('title', 'Toko Buku Pintar')
 @section('styles')
     <!-- BOOTSTRAP -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 
-    <!-- Home CSS -->
+    <!-- Home CSS (pakai HTTPS aman) -->
     <link rel="stylesheet" href="{{ asset('css/home.css') }}">
     <link rel="stylesheet" href="{{ secure_asset('css/home.css') }}">
-
-
-    <!-- NAVBAR CUSTOM CSS -->
-
 @endsection
 
-
 @section('content')
-<!-- ================= Welcome Rotator (letakkan di atas poster / hero) ================= -->
-<!-- === RUNNING TEXT / MARQUEE === -->
+<!-- ================= Welcome Rotator ================= -->
 <div class="running-banner">
     <div class="running-track" id="runningTrack">
         ⭐ Selamat datang di Toko Buku — Temukan bacaan terbaik setiap hari!  
@@ -33,11 +26,12 @@
   <div class="poster-slides">
     @forelse($posterFiles as $p)
       <div class="poster-slide">
-        <img src="{{ secure_asset('storage/' . $p) }}" alt="Poster" />
+        {{-- asumsi $p = nama file, contoh: "poster1.jpg" --}}
+        <img src="{{ asset('images/poster/' . $p) }}" alt="Poster">
       </div>
     @empty
       <div class="poster-slide">
-        <img src="{{ secure_asset('storage/poster/poster.png') }}" alt="Poster default" />
+        <img src="{{ asset('images/poster/poster.png') }}" alt="Poster default">
       </div>
     @endforelse
   </div>
@@ -47,7 +41,6 @@
   </div>
 </div>
 
-<!-- MAIN WRAPPER: gunakan class agar CSS tidak terganggu bootstrap -->
 <main class="home-wrapper">
   {{-- HERO --}}
   <section class="hero">
@@ -66,12 +59,6 @@
         <strong style="color:var(--primary)">Fiksi</strong> · Nonfiksi · Anak · Pendidikan
       </div>
     </div>
-
-    <!-- <div class="book-wrap fade-in delay-2" aria-hidden="true">
-      <div class="book" role="img" aria-label="Ilustrasi buku terbaik kami">
-        <h3>100 Cara Menjadi Pembaca Hebat</h3>
-      </div>
-    </div> -->
   </section>
 
   {{-- BEST SELLER --}}
@@ -95,7 +82,10 @@
         <article class="card fade-in" tabindex="0" aria-labelledby="b{{ $b->id }}">
           <div class="cover">
             @if($b->gambar)
-              <img src="{{ secure_asset('storage/' . ltrim($b->gambar, '/')) }}" alt="Cover {{ $b->judul }}" style="width:100%;height:100%;object-fit:cover">
+              {{-- asumsi $b->gambar = "Matematika SD 1 Arya Duta.png" --}}
+              <img src="{{ asset('images/' . ltrim($b->gambar, '/')) }}" 
+                   alt="Cover {{ $b->judul }}" 
+                   style="width:100%;height:100%;object-fit:cover">
             @else
               <img src="https://via.placeholder.com/150x220?text=No+Cover" alt="No Cover">
             @endif
@@ -112,28 +102,27 @@
   </section>
 
   {{-- PENERBIT --}}
-<!-- Penerbit (Slider) -->
-<section id="publishers" class="section">
-  <h2>Penerbit yang hadir</h2>
-  <div style="color:var(--muted);margin-bottom:12px">Kerja sama dengan penerbit lokal dan nasional</div>
+  <section id="publishers" class="section">
+    <h2>Penerbit yang hadir</h2>
+    <div style="color:var(--muted);margin-bottom:12px">Kerja sama dengan penerbit lokal dan nasional</div>
 
-  <div class="publisher-slider" aria-label="Slider logo penerbit" id="pubSlider">
-    <div class="slider-track">
-      @foreach($publishers as $p)
-        {{-- pastikan $p['logo'] berisi URL; jika ada kemungkinan masih ui-avatars, bisa skip --}}
-        <div class="slide">
-          <img
-            src="{{ $p['logo'] }}"
-            alt="Logo {{ $p['name'] }}"
-            class="slide-logo"
-            loading="lazy"
-            onerror="this.onerror=null;this.src='/mnt/data/656ad747-c57a-466e-8292-386cad4a5966.png';"
-          >
-        </div>
-      @endforeach
+    <div class="publisher-slider" aria-label="Slider logo penerbit" id="pubSlider">
+      <div class="slider-track">
+        @foreach($publishers as $p)
+          <div class="slide">
+            {{-- asumsi $p['logo'] = nama file, contoh: "erlangga.png" --}}
+            <img
+              src="{{ asset('images/publishers/' . $p['logo']) }}"
+              alt="Logo {{ $p['name'] }}"
+              class="slide-logo"
+              loading="lazy"
+              onerror="this.onerror=null;this.src='https://via.placeholder.com/120x60?text=No+Logo';"
+            >
+          </div>
+        @endforeach
+      </div>
     </div>
-</section>
-
+  </section>
 
   {{-- FAQ --}}
   <section id="faq" class="section">
@@ -150,7 +139,6 @@
       @endforeach
     </div>
   </section>
-
 </main>
 
 <footer>
@@ -177,7 +165,6 @@
     </div>
   </div>
 </footer>
-
 @endsection
 
 @section('scripts')

@@ -1,0 +1,501 @@
+:root {
+    --bg: #f4f6ff;
+    --muted: #64748b;
+    --primary: #2563eb;
+    --accent: #1e3a8a;
+}
+
+/* NAVBAR */
+.main-nav {
+    background: linear-gradient(180deg, #eef2ff, var(--bg));
+    box-shadow: 0 4px 18px rgba(11, 15, 33, 0.06);
+    position: sticky;
+    top: 0;
+    z-index: 1200;
+}
+.nav-container {
+    max-width: 1200px;
+    margin: auto;
+    padding: 12px 18px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    justify-content: space-between;
+}
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+}
+.brand-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 10px;
+    background: linear-gradient(135deg, #1e3a8a, #3b82f6);
+    display: inline-block;
+}
+.brand-title {
+    font-weight: 700;
+    color: #0f172a;
+    font-size: 18px;
+}
+.brand-subtitle {
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 2px;
+}
+
+.nav-links {
+    display: flex;
+    gap: 24px;
+    align-items: center;
+    flex: 1;
+    justify-content: center;
+}
+.nav-links a {
+    color: #0f172a;
+    text-decoration: none;
+    font-weight: 500;
+}
+.nav-links a.active {
+    font-weight: 700;
+    border-bottom: 2px solid var(--primary);
+    padding-bottom: 2px;
+}
+
+.nav-actions {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+}
+.cart-link {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    color: #0f172a;
+    text-decoration: none;
+}
+.cart-link span.badge {
+    background: #ef4444;
+    color: #fff;
+    border-radius: 999px;
+    padding: 0 8px;
+    font-size: 12px;
+}
+
+.btn-buy {
+    background: #2563eb;
+    color: #fff;
+    padding: 8px 16px;
+    border-radius: 999px;
+    border: none;
+    font-weight: 600;
+    text-decoration: none;
+}
+.btn-buy:hover {
+    background: #1d4ed8;
+    color: #fff;
+    text-decoration: none;
+}
+
+@media (max-width: 768px) {
+    .nav-links {
+        display: none;
+    }
+}
+
+/* brand */
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    text-decoration: none;
+    color: var(--text);
+    white-space: nowrap;
+}
+.brand-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    background: linear-gradient(135deg, var(--primary), var(--accent));
+    flex: 0 0 40px;
+}
+.brand-title {
+    font-weight: 700;
+    color: var(--text);
+    font-size: 16px;
+}
+
+/* ---------- nav links (desktop) ---------- */
+.nav-links {
+    display: flex;
+    gap: 18px;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+}
+.nav-links a {
+    color: var(--text);
+    text-decoration: none;
+    padding: 8px 10px;
+    font-weight: 500;
+    border-radius: 8px;
+    transition: background 0.18s ease, color 0.12s ease;
+}
+.nav-links a:hover,
+.nav-links a:focus {
+    background: rgba(0, 0, 0, 0.03);
+    outline: none;
+    color: var(--primary);
+}
+
+/* ---------- actions ---------- */
+.nav-actions {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+}
+
+/* cart */
+.cart {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--primary);
+    color: var(--white);
+    padding: 8px 10px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 14px;
+}
+.cart span {
+    background: #ff3b30;
+    padding: 2px 6px;
+    border-radius: 999px;
+    font-size: 12px;
+    color: #fff;
+    font-weight: 700;
+}
+
+/* primary CTA */
+.btn-buy {
+    display: inline-block;
+    background: var(--accent);
+    color: var(--white);
+    padding: 8px 14px;
+    border-radius: 10px;
+    text-decoration: none;
+    font-weight: 700;
+    transition: transform 0.12s ease, background 0.12s ease;
+}
+.btn-buy:hover,
+.btn-buy:focus {
+    transform: translateY(-2px);
+    background: #2563eb;
+    outline: none;
+}
+
+/* ---------- hamburger (desktop hidden) ---------- */
+.hamburger {
+    display: none;
+    border: 0;
+    background: transparent;
+    font-size: 22px;
+    line-height: 1;
+    cursor: pointer;
+    color: var(--text);
+    padding: 6px;
+    border-radius: 8px;
+}
+.hamburger:focus {
+    outline: 2px solid rgba(59, 130, 246, 0.25);
+}
+
+/* ---------- mobile menu (default hidden) ---------- */
+/* Use absolute overlay version so it can slide; fallback to inline if you prefer */
+.mobile-menu {
+    display: none;
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 100%;
+    background: var(--white);
+    border-top: 1px solid #eee;
+    padding: 14px 18px;
+    box-shadow: 0 10px 40px rgba(12, 18, 24, 0.06);
+}
+
+/* links inside mobile */
+.mobile-menu a {
+    display: block;
+    text-decoration: none;
+    color: var(--text);
+    padding: 10px 6px;
+    border-radius: 8px;
+    font-weight: 600;
+}
+.mobile-menu a:hover,
+.mobile-menu a:focus {
+    background: rgba(0, 0, 0, 0.03);
+    color: var(--primary);
+}
+
+/* mobile CTA in menu style */
+.mobile-menu .btn-buy {
+    display: block;
+    text-align: center;
+    margin-top: 8px;
+}
+
+/* open class toggles visibility */
+.mobile-menu.open {
+    display: block;
+    animation: slideDown 0.16s ease;
+}
+
+/* slide animation */
+@keyframes slideDown {
+    from {
+        transform: translateY(-6px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+/* ---------- responsive ---------- */
+@media (max-width: 900px) {
+    .nav-links {
+        display: none; /* hide center links on narrow screens */
+    }
+    .hamburger {
+        display: inline-block; /* show hamburger on mobile */
+    }
+    .nav-container {
+        padding: 10px 12px;
+    }
+    .brand-title {
+        font-size: 15px;
+    }
+
+    /* Move CTA into mobile menu visually; keep small visible cart */
+    .nav-actions .btn-buy {
+        display: none;
+    }
+    .cart {
+        padding: 8px;
+        font-size: 13px;
+    }
+}
+
+/* small tweak to avoid content jump when menu opens if you prefer inline flow:
+   If mobile-menu is absolute overlay, it won't push content.
+   If you'd rather push content down, remove 'position:absolute' in .mobile-menu. */
+/* Matikan tombol panah besar */
+.swiper-button-next,
+.swiper-button-prev,
+.arrow,
+.slider-arrow {
+    display: none !important;
+    opacity: 0 !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+}
+:root {
+    --nav-bg: #f1f6ff;
+    --primary: #1e3a8a;
+    --accent: #3b82f6;
+    --text: #0f1724;
+    --muted: #6b7280;
+}
+
+/* main container */
+.main-nav {
+    position: sticky;
+    top: 0;
+    z-index: 1200;
+    background: var(--nav-bg);
+    box-shadow: 0 2px 8px rgba(15, 23, 42, 0.06);
+}
+
+/* inner wrapper */
+.nav-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 10px 18px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+/* brand */
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    text-decoration: none;
+    color: var(--text);
+    white-space: nowrap;
+}
+.brand-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    background: linear-gradient(135deg, var(--primary), var(--accent));
+    flex: 0 0 40px;
+}
+.brand-title {
+    font-weight: 700;
+    color: var(--text);
+}
+
+/* nav links (desktop) */
+.nav-links {
+    display: flex;
+    gap: 18px;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+}
+.nav-links a {
+    color: var(--text);
+    text-decoration: none;
+    padding: 8px 10px;
+    font-weight: 600;
+    border-radius: 8px;
+}
+.nav-links a.active,
+.nav-links a:hover {
+    background: white;
+    box-shadow: 0 6px 18px rgba(11, 15, 33, 0.03);
+}
+
+/* search */
+.nav-search {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-right: 8px;
+}
+.nav-search-input {
+    height: 36px;
+    padding: 6px 10px;
+    border-radius: 999px;
+    border: 1px solid rgba(15, 23, 42, 0.08);
+    min-width: 200px;
+    background: #fff;
+}
+.nav-search-btn {
+    border: 0;
+    background: var(--accent);
+    color: #fff;
+    height: 36px;
+    padding: 0 10px;
+    border-radius: 999px;
+    cursor: pointer;
+    font-weight: 700;
+}
+
+/* actions */
+.nav-actions {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+.cart {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--primary);
+    color: #fff;
+    padding: 8px 10px;
+    border-radius: 8px;
+    text-decoration: none;
+}
+.cart span {
+    background: #ff3b30;
+    padding: 2px 6px;
+    border-radius: 999px;
+    font-size: 12px;
+    color: #fff;
+}
+
+/* buttons */
+.btn-buy {
+    background: var(--accent);
+    color: #fff;
+    padding: 8px 14px;
+    border-radius: 10px;
+    text-decoration: none;
+    font-weight: 700;
+}
+
+/* hamburger */
+.hamburger {
+    display: none;
+    border: 0;
+    background: transparent;
+    font-size: 22px;
+    cursor: pointer;
+    padding: 6px;
+}
+
+/* mobile menu */
+.mobile-menu {
+    display: none;
+    background: #fff;
+    border-top: 1px solid #eee;
+    padding: 12px 18px;
+    box-shadow: 0 10px 40px rgba(12, 18, 24, 0.06);
+}
+.mobile-menu.open {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+/* mobile search in menu */
+.mobile-search {
+    display: flex;
+    gap: 8px;
+    margin-top: 8px;
+}
+.mobile-search .nav-search-input {
+    flex: 1;
+}
+
+/* responsive */
+@media (max-width: 992px) {
+    .nav-search-input {
+        min-width: 140px;
+    }
+}
+@media (max-width: 768px) {
+    .nav-links {
+        display: none;
+    }
+    .hamburger {
+        display: inline-block;
+    }
+    .nav-actions .btn-buy {
+        display: none;
+    }
+    .nav-search {
+        display: none;
+    }
+    .mobile-menu {
+        display: none;
+    }
+    .mobile-menu.open {
+        display: flex;
+    }
+    .mobile-search .nav-search-input {
+        display: block;
+        width: 100%;
+    }
+}

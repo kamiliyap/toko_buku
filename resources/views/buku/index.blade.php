@@ -256,7 +256,7 @@ svg.w-5.h-5 path,
         <div class="col-6 col-md-4 col-lg-3">
           <article class="card-book shadow-sm" aria-labelledby="b{{ $b->id }}">
             <img
-              src="{{ $b->gambar ? asset('storage/' . ltrim($b->gambar,'/')) : asset('assets/img/no-cover.png') }}"
+              src="{{ $b->gambar ? secure_asset('storage/' . ltrim($b->gambar,'/')) : secure_asset('assets/img/no-cover.png') }}"
               onerror="this.onerror=null;this.src='{{ $localFallback }}';"
               alt="Cover {{ $b->judul }}"
               class="card-cover"

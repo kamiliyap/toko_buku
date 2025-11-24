@@ -439,7 +439,7 @@
 
                 {{-- COVER --}}
                 <img 
-                    src="{{ $b->gambar ? asset('storage/'.$b->gambar) : asset('assets/img/no-cover.png') }}"
+                    src="{{ $b->gambar ? secure_asset('storage/'.$b->gambar) : secure_asset('assets/img/no-cover.png') }}"
                     class="card-cover"
                     alt="Cover {{ $b->judul }}">
 

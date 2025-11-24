@@ -8,7 +8,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 
     <!-- Home CSS -->
-    <!-- <link rel="stylesheet" href="{{ asset('css/home.css') }}"> -->
+    <link rel="stylesheet" href="{{ asset('css/home.css') }}">
     <link rel="stylesheet" href="{{ secure_asset('css/home.css') }}">
 
 
@@ -33,11 +33,11 @@
   <div class="poster-slides">
     @forelse($posterFiles as $p)
       <div class="poster-slide">
-        <img src="{{ asset('storage/' . $p) }}" alt="Poster" />
+        <img src="{{ secure_asset('storage/' . $p) }}" alt="Poster" />
       </div>
     @empty
       <div class="poster-slide">
-        <img src="{{ asset('storage/poster/poster.png') }}" alt="Poster default" />
+        <img src="{{ secure_asset('storage/poster/poster.png') }}" alt="Poster default" />
       </div>
     @endforelse
   </div>
@@ -95,7 +95,7 @@
         <article class="card fade-in" tabindex="0" aria-labelledby="b{{ $b->id }}">
           <div class="cover">
             @if($b->gambar)
-              <img src="{{ asset('storage/' . ltrim($b->gambar, '/')) }}" alt="Cover {{ $b->judul }}" style="width:100%;height:100%;object-fit:cover">
+              <img src="{{ secure_asset('storage/' . ltrim($b->gambar, '/')) }}" alt="Cover {{ $b->judul }}" style="width:100%;height:100%;object-fit:cover">
             @else
               <img src="https://via.placeholder.com/150x220?text=No+Cover" alt="No Cover">
             @endif

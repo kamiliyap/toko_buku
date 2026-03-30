@@ -6,24 +6,32 @@ use App\Models\Buku;
 use App\Models\Pesanan;
 use App\Models\PesananDetail;
 use Illuminate\Http\Request;
-use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 use Barryvdh\DomPDF\Facade\Pdf;
-use App\Http\Controllers\PembelianController;
-
-use function PHPUnit\Framework\returnSelf;
-
 
 class PembelianController extends Controller
 {
-    // ====== LIST BUKU + TOMBOL TAMBAH KE KERANJANG ======
-    public function indexBuku()
+    public function indexBuku(Request $request)
     {
-        $bukus = Buku::all();
+        $query = Buku::query();
+
+        if ($request->filled('q')) {
+            $search = trim($request->q);
+
+            $query->where(function ($q) use ($search) {
+                $q->where('judul', 'like', "%{$search}%")
+                    ->orWhere('penulis', 'like', "%{$search}%")
+                    ->orWhere('penerbit', 'like', "%{$search}%")
+                    ->orWhere('kategori', 'like', "%{$search}%");
+            });
+        }
+
+        $bukus = $query->orderBy('judul')->get();
+
         return view('pembelian.buku_index', compact('bukus'));
     }
 
-    // ====== LIHAT KERANJANG ======
     public function cart()
     {
         $cart = session()->get('cart', []);
@@ -33,20 +41,20 @@ class PembelianController extends Controller
             $subtotal += $item['harga'] * $item['qty'];
         }
 
-        $ppn = $subtotal * 0.10; // 10%
+        $ppn = $subtotal * 0.10;
         $total = $subtotal + $ppn;
 
         return view('pembelian.cart', compact('cart', 'subtotal', 'ppn', 'total'));
     }
 
-    // ====== TAMBAH KE KERANJANG ======
     public function addToCart(Request $request, $id)
     {
         $buku = Buku::findOrFail($id);
 
-        // cek stok
         $qtyRequest = $request->input('qty', 1);
-        if ($qtyRequest < 1) $qtyRequest = 1;
+        if ($qtyRequest < 1) {
+            $qtyRequest = 1;
+        }
 
         if ($buku->stok < $qtyRequest) {
             return back()->with('error', 'Stok tidak mencukupi.');
@@ -55,7 +63,6 @@ class PembelianController extends Controller
         $cart = session()->get('cart', []);
 
         if (isset($cart[$id])) {
-            // kalau sudah ada di keranjang, tambahkan qty
             $newQty = $cart[$id]['qty'] + $qtyRequest;
 
             if ($buku->stok < $newQty) {
@@ -64,11 +71,10 @@ class PembelianController extends Controller
 
             $cart[$id]['qty'] = $newQty;
         } else {
-            // item baru
             $cart[$id] = [
                 'judul' => $buku->judul,
                 'harga' => $buku->harga,
-                'qty'   => $qtyRequest,
+                'qty' => $qtyRequest,
             ];
         }
 
@@ -77,12 +83,13 @@ class PembelianController extends Controller
         return redirect()->route('cart.index')->with('success', 'Buku ditambahkan ke keranjang.');
     }
 
-    // ====== UPDATE QTY DI KERANJANG ======
     public function updateCart(Request $request, $id)
     {
         $buku = Buku::findOrFail($id);
         $qty = (int) $request->input('qty', 1);
-        if ($qty < 1) $qty = 1;
+        if ($qty < 1) {
+            $qty = 1;
+        }
 
         if ($buku->stok < $qty) {
             return back()->with('error', 'Stok tidak mencukupi.');
@@ -97,7 +104,6 @@ class PembelianController extends Controller
         return back()->with('success', 'Keranjang diperbarui.');
     }
 
-    // ====== HAPUS ITEM KERANJANG ======
     public function removeFromCart($id)
     {
         $cart = session()->get('cart', []);
@@ -109,7 +115,6 @@ class PembelianController extends Controller
         return back()->with('success', 'Item dihapus dari keranjang.');
     }
 
-    // ====== FORM CHECKOUT ======
     public function checkoutForm()
     {
         $cart = session()->get('cart', []);
@@ -128,13 +133,12 @@ class PembelianController extends Controller
         return view('pembelian.checkout', compact('cart', 'subtotal', 'ppn', 'total'));
     }
 
-    // ====== PROSES CHECKOUT (SIMPAN PESANAN) ======
     public function prosesCheckout(Request $request)
     {
         $request->validate([
             'nama_pelanggan' => 'required|string|max:255',
-            'no_hp'          => 'nullable|string|max:30',
-            'alamat'         => 'nullable|string',
+            'no_hp' => 'nullable|string|max:30',
+            'alamat' => 'nullable|string',
         ]);
 
         $cart = session()->get('cart', []);
@@ -142,7 +146,6 @@ class PembelianController extends Controller
             return redirect()->route('cart.index')->with('error', 'Keranjang kosong.');
         }
 
-        // Hitung ulang subtotal, PPN, total
         $subtotal = 0;
         foreach ($cart as $bukuId => $item) {
             $subtotal += $item['harga'] * $item['qty'];
@@ -152,45 +155,39 @@ class PembelianController extends Controller
 
         DB::beginTransaction();
         try {
-            // generate kode pesanan
             $kode = 'ORD-' . date('Ymd') . '-' . strtoupper(Str::random(5));
 
-            // simpan ke tabel pesanan
             $pesanan = Pesanan::create([
-                'kode_pesanan'   => $kode,
+                'kode_pesanan' => $kode,
                 'nama_pelanggan' => $request->nama_pelanggan,
-                'no_hp'          => $request->no_hp,
-                'alamat'         => $request->alamat,
-                'subtotal'       => $subtotal,
-                'ppn'            => $ppn,
-                'total'          => $total,
+                'no_hp' => $request->no_hp,
+                'alamat' => $request->alamat,
+                'subtotal' => $subtotal,
+                'ppn' => $ppn,
+                'total' => $total,
             ]);
 
-            // simpan detail + kurangi stok
             foreach ($cart as $bukuId => $item) {
                 $buku = Buku::findOrFail($bukuId);
 
-                // cek stok lagi untuk aman
                 if ($buku->stok < $item['qty']) {
                     throw new \Exception("Stok untuk {$buku->judul} tidak mencukupi.");
                 }
 
                 PesananDetail::create([
                     'pesanan_id' => $pesanan->id,
-                    'buku_id'    => $bukuId,
-                    'qty'        => $item['qty'],
-                    'harga'      => $item['harga'],
-                    'subtotal'   => $item['harga'] * $item['qty'],
+                    'buku_id' => $bukuId,
+                    'qty' => $item['qty'],
+                    'harga' => $item['harga'],
+                    'subtotal' => $item['harga'] * $item['qty'],
                 ]);
 
-                // kurangi stok
                 $buku->stok -= $item['qty'];
                 $buku->save();
             }
 
             DB::commit();
 
-            // kosongkan keranjang
             session()->forget('cart');
 
             return redirect()->route('pembelian.selesai', $pesanan->id)
@@ -201,20 +198,22 @@ class PembelianController extends Controller
         }
     }
 
-    // ====== HALAMAN DETAIL / SELESAI PESANAN ======
     public function selesai($id)
     {
         $pesanan = Pesanan::with('details.buku')->findOrFail($id);
-        return view('pembelian.selesai', compact('pesanan'));
+        $barcodeHtml = $this->generateCode39Html($pesanan->kode_pesanan);
+
+        return view('pembelian.selesai', compact('pesanan', 'barcodeHtml'));
     }
 
-    // ====== DOWNLOAD PDF NOTA ======
     public function downloadPdf($id)
     {
         $pesanan = Pesanan::with('details.buku')->findOrFail($id);
+        $barcodeHtml = $this->generateCode39Html($pesanan->kode_pesanan);
 
         $pdf = Pdf::loadView('pembelian.nota_pdf', [
             'pesanan' => $pesanan,
+            'barcodeHtml' => $barcodeHtml,
         ])->setPaper('a4', 'portrait');
 
         $filename = 'Nota-' . $pesanan->kode_pesanan . '.pdf';
@@ -222,24 +221,118 @@ class PembelianController extends Controller
         return $pdf->download($filename);
     }
 
-    // ====== DETAIL PESANAN ======
     public function detail($id)
     {
         $pesanan = Pesanan::with('details.buku')->findOrFail($id);
         return view('pembelian.detail', compact('pesanan'));
     }
-public function batalkan($id)
-{
-    $pesanan = Pesanan::findOrFail($id);
 
-    // Hapus detail terlebih dahulu
-    PesananDetail::where('pesanan_id', $id)->delete();
+    public function batalkan($id)
+    {
+        $pesanan = Pesanan::findOrFail($id);
 
-    // Hapus pesanan utama
-    $pesanan->delete();
+        PesananDetail::where('pesanan_id', $id)->delete();
+        $pesanan->delete();
 
-    return redirect()->route('pembelian.buku_index')
-                     ->with('success', 'Pesanan berhasil dibatalkan.');
+        return redirect()->route('pembelian.buku_index')
+            ->with('success', 'Pesanan berhasil dibatalkan.');
+    }
+
+    private function generateCode39Html(string $value): string
+    {
+        $value = strtoupper(trim($value));
+
+        $patterns = [
+            '0' => 'nnnwwnwnn',
+            '1' => 'wnnwnnnnw',
+            '2' => 'nnwwnnnnw',
+            '3' => 'wnwwnnnnn',
+            '4' => 'nnnwwnnnw',
+            '5' => 'wnnwwnnnn',
+            '6' => 'nnwwwnnnn',
+            '7' => 'nnnwnnwnw',
+            '8' => 'wnnwnnwnn',
+            '9' => 'nnwwnnwnn',
+            'A' => 'wnnnnwnnw',
+            'B' => 'nnwnnwnnw',
+            'C' => 'wnwnnwnnn',
+            'D' => 'nnnnwwnnw',
+            'E' => 'wnnnwwnnn',
+            'F' => 'nnwnwwnnn',
+            'G' => 'nnnnnwwnw',
+            'H' => 'wnnnnwwnn',
+            'I' => 'nnwnnwwnn',
+            'J' => 'nnnnwwwnn',
+            'K' => 'wnnnnnnww',
+            'L' => 'nnwnnnnww',
+            'M' => 'wnwnnnnwn',
+            'N' => 'nnnnwnnww',
+            'O' => 'wnnnwnnwn',
+            'P' => 'nnwnwnnwn',
+            'Q' => 'nnnnnnwww',
+            'R' => 'wnnnnnwwn',
+            'S' => 'nnwnnnwwn',
+            'T' => 'nnnnwnwwn',
+            'U' => 'wwnnnnnnw',
+            'V' => 'nwwnnnnnw',
+            'W' => 'wwwnnnnnn',
+            'X' => 'nwnnwnnnw',
+            'Y' => 'wwnnwnnnn',
+            'Z' => 'nwwnwnnnn',
+            '-' => 'nwnnnnwnw',
+            '.' => 'wwnnnnwnn',
+            ' ' => 'nwwnnnwnn',
+            '$' => 'nwnwnwnnn',
+            '/' => 'nwnwnnnwn',
+            '+' => 'nwnnnwnwn',
+            '%' => 'nnnwnwnwn',
+            '*' => 'nwnnwnwnn',
+        ];
+
+        if ($value === '') {
+            return '';
+        }
+
+        $barcode = '*' . $value . '*';
+        $narrow = 2;
+        $wide = 5;
+        $gap = 2;
+        $barHeight = 60;
+        $cells = [];
+
+        foreach (str_split($barcode) as $char) {
+            if (! isset($patterns[$char])) {
+                return '';
+            }
+
+            $isBar = true;
+
+            foreach (str_split($patterns[$char]) as $unit) {
+                $width = $unit === 'w' ? $wide : $narrow;
+
+                $cells[] = sprintf(
+                    '<td class="%s" style="width:%dpx;height:%dpx;"></td>',
+                    $isBar ? 'barcode-black' : 'barcode-space',
+                    $width,
+                    $barHeight
+                );
+
+                $isBar = ! $isBar;
+            }
+
+            $cells[] = sprintf(
+                '<td class="barcode-space" style="width:%dpx;height:%dpx;"></td>',
+                $gap,
+                $barHeight
+            );
+        }
+
+        $escapedValue = e($value);
+
+        return sprintf(
+            '<div class="barcode-wrap" aria-label="Barcode %1$s"><table class="barcode-table" cellspacing="0" cellpadding="0" role="presentation"><tr>%2$s</tr></table><div class="barcode-label">%1$s</div></div>',
+            $escapedValue,
+            implode('', $cells)
+        );
+    }
 }
-
-}   

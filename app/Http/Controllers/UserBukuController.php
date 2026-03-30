@@ -51,7 +51,6 @@ class UserBukuController extends Controller
     public function show($id)
     {
         $book = Buku::findOrFail($id);
-        return view('buku-detail', compact('book'));
+        return view('buku.show', compact('book'));
     }
 }
-

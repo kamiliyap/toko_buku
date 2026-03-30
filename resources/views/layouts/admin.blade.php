@@ -2,8 +2,10 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <title>@yield('title', 'Dashboard Admin')</title>
+    <title>@yield('title', 'Dashboard Admin') - {{ $storeSettings['store_name'] ?? 'Toko Buku Pintar' }}</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" type="image/png" href="{{ asset('images/logoweb/logoweb.png') }}">
+    <link rel="apple-touch-icon" href="{{ asset('images/logoweb/logoweb.png') }}">
 
     {{-- Bootstrap 5 CDN --}}
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -120,7 +122,7 @@
         <div class="brand">
             <span class="icon">📚</span>
             <div>
-                <div>Toko Buku</div>
+                <div>{{ $storeSettings['store_name'] ?? 'Toko Buku Pintar' }}</div>
                 <small class="text-muted">Panel Admin</small>
             </div>
         </div>
@@ -188,11 +190,11 @@
             </div>
 
             {{-- ================= BERITA ================= --}}
-            <a class="nav-link d-flex justify-content-between align-items-center"
+            <a class="nav-link d-flex justify-content-between align-items-center {{ request()->is('admin/pengaturan*') ? 'active' : '' }}"
                data-bs-toggle="collapse"
                href="#menuBerita"
                role="button"
-               aria-expanded="false"
+               aria-expanded="{{ request()->is('admin/pengaturan*') ? 'true' : 'false' }}"
                aria-controls="menuBerita">
                 <span>📰 Berita</span>
                 <span class="small">▾</span>
@@ -225,11 +227,11 @@
                  id="menuUser">
                 <div class="nav flex-column nav-sub">
                     <a class="nav-link {{ request()->is('admin/user') ? 'active' : '' }}"
-                       href="{{ url('admin/user') }}">
+                       href="{{ route('admin.user.index') }}">
                         • Daftar User
                     </a>
                     <a class="nav-link {{ request()->is('admin/user/create') ? 'active' : '' }}"
-                       href="{{ url('admin/user/create') }}">
+                       href="{{ route('admin.user.create') }}">
                         • Tambah User
                     </a>
                 </div>
@@ -238,21 +240,21 @@
             {{-- ================= PENGATURAN ================= --}}
             <div class="menu-title mt-3">Pengaturan</div>
 
-            <a class="nav-link d-flex justify-content-between align-items-center"
+            <a class="nav-link d-flex justify-content-between align-items-center {{ request()->is('admin/pengaturan*') ? 'active' : '' }}"
                data-bs-toggle="collapse"
                href="#menuPengaturan"
                role="button"
-               aria-expanded="false"
+               aria-expanded="{{ request()->is('admin/pengaturan*') ? 'true' : 'false' }}"
                aria-controls="menuPengaturan">
                 <span>⚙️ Pengaturan</span>
                 <span class="small">▾</span>
             </a>
-            <div class="collapse" id="menuPengaturan">
+            <div class="collapse {{ request()->is('admin/pengaturan*') ? 'show' : '' }}" id="menuPengaturan">
                 <div class="nav flex-column nav-sub">
-                    <a class="nav-link" href="#">
+                    <a class="nav-link {{ request()->is('admin/pengaturan*') ? 'active' : '' }}" href="{{ route('admin.settings.edit') }}#profil">
                         • Profil
                     </a>
-                    <a class="nav-link" href="#">
+                    <a class="nav-link {{ request()->is('admin/pengaturan*') ? 'active' : '' }}" href="{{ route('admin.settings.edit') }}#toko">
                         • Pengaturan Toko
                     </a>
                 </div>

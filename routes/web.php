@@ -5,6 +5,8 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\BeritaController;
 use App\Http\Controllers\AdminController;
+use App\Http\Middleware\EnsureUserIsAdmin;
+use App\Http\Controllers\UserController;
 use App\Http\Controllers\PembelianController;
 use App\Http\Controllers\BukuUserController;
 use App\Http\Controllers\UserBukuController;
@@ -17,6 +19,7 @@ use App\Http\Controllers\Admin\BukuController;
 use App\Http\Controllers\Admin\KategoriController;
 use App\Http\Controllers\Admin\PenerbitController;
 use App\Http\Controllers\Admin\PesananController;
+use App\Http\Controllers\Admin\SettingsController;
 
 // =========================
 // HALAMAN DEPAN
@@ -38,7 +41,7 @@ Route::post('logout', [LoginController::class, 'logout'])->name('logout');
 // =========================
 // ADMIN AREA (URL: /admin/...)
 // =========================
-Route::prefix('admin')->group(function () {
+Route::prefix('admin')->middleware(EnsureUserIsAdmin::class)->group(function () {
 
     // Dashboard admin
     Route::get('/dashboard', [AdminController::class, 'dashboard'])
@@ -65,6 +68,16 @@ Route::prefix('admin')->group(function () {
 
     // HAPUS PESANAN
     Route::delete('pesanan/{id}', [PesananController::class, 'destroy'])->name('pesanan.destroy');
+
+    // USER ADMIN
+    Route::get('user', [UserController::class, 'index'])->name('admin.user.index');
+    Route::get('user/create', [UserController::class, 'create'])->name('admin.user.create');
+    Route::post('user', [UserController::class, 'store'])->name('admin.user.store');
+
+    // PENGATURAN
+    Route::get('pengaturan', [SettingsController::class, 'edit'])->name('admin.settings.edit');
+    Route::put('pengaturan/profil', [SettingsController::class, 'updateProfile'])->name('admin.settings.profile.update');
+    Route::put('pengaturan/toko', [SettingsController::class, 'updateStore'])->name('admin.settings.store.update');
 });
 
 // =========================

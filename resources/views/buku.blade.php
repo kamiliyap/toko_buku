@@ -2,6 +2,7 @@
 @extends('layouts.user')
 
 @section('title', 'Daftar Buku')
+@section('nav_search_action', route('user.buku.index'))
 
 @section('styles')
 <style>
@@ -51,6 +52,25 @@
         color: #2563eb;
         font-weight: 700;
         margin-top: 4px;
+    }
+
+    .book-stock {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        width: fit-content;
+        margin-top: 4px;
+        padding: 5px 10px;
+        border-radius: 999px;
+        background: #dcfce7;
+        color: #166534;
+        font-size: 12px;
+        font-weight: 700;
+    }
+
+    .book-stock.out {
+        background: #fee2e2;
+        color: #b91c1c;
     }
 
     .badge-kategori {
@@ -206,7 +226,7 @@
 @endsection
 
 @section('content')
-    <h3 class="fw-bold mb-3">📚 Daftar Buku</h3>
+    <h3 class="fw-bold mb-3"><i class="bi bi-book"></i> Daftar Buku</h3>
 
     {{-- ====== FILTER DROPDOWN CHECKBOX ====== --}}
     <form method="GET" action="{{ url()->current() }}" class="filter-bar">
@@ -218,7 +238,7 @@
                     type="text"
                     name="q"
                     class="form-control"
-                    placeholder="🔍 Cari judul atau penerbit..."
+                    placeholder=" Cari judul atau penerbit..."
                     value="{{ request('q') }}"
                 >
             </div>
@@ -263,7 +283,7 @@
                         name="murah_only" value="1"
                         {{ request('murah_only') ? 'checked' : '' }}>
                     <label class="form-check-label" for="murah_only" style="font-size: 13px;">
-                        Harga ≤ 50.000
+                        Harga Rp50.000
                     </label>
                 </div>
 
@@ -303,8 +323,13 @@
                         Rp {{ number_format($book->harga ?? 0, 0, ',', '.') }}
                     </div>
 
+                    <div class="book-stock {{ ($book->stok ?? 0) < 1 ? 'out' : '' }}">
+                        <i class="bi {{ ($book->stok ?? 0) < 1 ? 'bi-x-circle' : 'bi-box-seam' }}"></i>
+                        {{ ($book->stok ?? 0) < 1 ? 'Stok habis' : 'Stok tersedia: ' . ($book->stok ?? 0) }}
+                    </div>
+
                     <div class="book-actions">
-                        <a href="#"
+                        <a href="{{ route('user.buku.show', $book->id) }}"
                            class="btn btn-outline-primary flex-fill">
                             Detail
                         </a>
@@ -313,8 +338,8 @@
                               method="POST"
                               class="flex-fill">
                             @csrf
-                            <button type="submit" class="btn btn-primary w-100">
-                                + Keranjang
+                            <button type="submit" class="btn btn-primary w-100" {{ ($book->stok ?? 0) < 1 ? 'disabled' : '' }}>
+                                {{ ($book->stok ?? 0) < 1 ? 'Stok Habis' : '+ Keranjang' }}
                             </button>
                         </form>
                     </div>
@@ -323,3 +348,4 @@
         @endforeach
     </div>
 @endsection
+

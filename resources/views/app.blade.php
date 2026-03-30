@@ -3,8 +3,10 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <title>@yield('title','Toko Buku Pintar')</title>
+    <title>@yield('title', $storeSettings['store_name'] ?? 'Toko Buku Pintar')</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" type="image/png" href="{{ asset('images/logoweb/logoweb.png') }}">
+    <link rel="apple-touch-icon" href="{{ asset('images/logoweb/logoweb.png') }}">
 
     {{-- Bootstrap & Icons --}}
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">

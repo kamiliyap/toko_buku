@@ -1,72 +1,79 @@
-{{-- resources/views/buku/show-standalone.blade.php --}}
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8">
-  <title>Detail Buku - {{ $b->judul }}</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-
-  {{-- Bootstrap CSS (standalone) --}}
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Detail Buku - {{ $book->judul }}</title>
+    <link rel="icon" type="image/png" href="{{ asset('images/logoweb/logoweb.png') }}">
+    <link rel="apple-touch-icon" href="{{ asset('images/logoweb/logoweb.png') }}">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body class="bg-light">
+    @php
+        $imgFile = basename($book->gambar ?? '');
+        $imgUrl = $imgFile ? asset('images/buku/' . $imgFile) : asset('images/no-cover.png');
+        $isbn = $book->ISBN ?? $book->isbn ?? '-';
+    @endphp
 
-  <div class="container py-5">
-    {{-- Tombol kembali --}}
-    <a href="{{ route('buku.index') }}" class="btn btn-secondary mb-4">← Kembali ke Daftar Buku</a>
+    <div class="container py-5">
+        <a href="{{ route('user.buku.index') }}" class="btn btn-secondary mb-4">&larr; Kembali ke Daftar Buku</a>
 
-    @if($b)
-      <div class="card shadow border-0">
-        <div class="row g-0">
-          <div class="col-md-4">
-            @php
-                $img = $buku->gambar ? basename($buku->gambar) : null;
-                $imgUrl = $img
-                    ? asset('images/buku/' . $img)    {{-- ambil dari public/images/buku --}}
-                    : asset('images/no-cover.png');   {{-- fallback --}}
-            @endphp
+        <div class="card shadow-sm border-0">
+            <div class="row g-0">
+                <div class="col-md-4">
+                    <img
+                        src="{{ $imgUrl }}"
+                        alt="Cover {{ $book->judul }}"
+                        class="img-fluid w-100 h-100 object-fit-cover rounded-start"
+                        style="min-height: 360px;"
+                    >
+                </div>
 
-            <img src="{{ $imgUrl }}"
-                alt="Cover {{ $buku->judul }}"
-                class="card-cover">
+                <div class="col-md-8">
+                    <div class="card-body p-4">
+                        <span class="badge text-bg-primary mb-3">{{ $book->kategori ?? 'Tanpa kategori' }}</span>
+                        <h1 class="h3 fw-bold mb-3">{{ $book->judul }}</h1>
 
-          <div class="col-md-8">
-            <div class="card-body">
-              <h3 class="fw-bold mb-3">{{ $b->judul }}</h3>
+                        <table class="table table-borderless align-middle mb-4">
+                            <tr>
+                                <th class="text-secondary" style="width: 180px;">Penulis</th>
+                                <td>{{ $book->penulis ?? '-' }}</td>
+                            </tr>
+                            <tr>
+                                <th class="text-secondary">Penerbit</th>
+                                <td>{{ $book->penerbit ?? '-' }}</td>
+                            </tr>
+                            <tr>
+                                <th class="text-secondary">ISBN</th>
+                                <td>{{ $isbn }}</td>
+                            </tr>
+                            <tr>
+                                <th class="text-secondary">Stok</th>
+                                <td>{{ $book->stok ?? 0 }}</td>
+                            </tr>
+                            <tr>
+                                <th class="text-secondary">Harga</th>
+                                <td class="fw-semibold text-primary">Rp {{ number_format($book->harga ?? 0, 0, ',', '.') }}</td>
+                            </tr>
+                        </table>
 
-              <table class="table table-borderless">
-                <tr><th width="150">Penerbit</th><td>{{ $b->penerbit ?? '-' }}</td></tr>
-                <tr><th>ISBN</th><td>{{ $b->ISBN ?? '-' }}</td></tr>
-                <tr><th>Penulis</th><td>{{ $b->penulis ?? '-' }}</td></tr>
-                <tr><th>Kategori</th><td>{{ $b->kategori ?? '-' }}</td></tr>
-                <tr><th>Stok</th><td>{{ $b->stok ?? '-' }}</td></tr>
-                <tr>
-                  <th>Harga</th>
-                  <td class="fw-bold text-primary">
-                    Rp {{ number_format($b->harga, 0, ',', '.') }}
-                  </td>
-                </tr>
-              </table>
+                        <div class="mb-4">
+                            <h2 class="h5 fw-semibold">Deskripsi</h2>
+                            <p class="text-secondary mb-0">
+                                {{ $book->deskripsi ?: 'Belum ada deskripsi untuk buku ini.' }}
+                            </p>
+                        </div>
 
-              {{-- opsional: tombol keranjang, kalau route-nya sudah ada --}}
-              {{-- 
-              <form action="{{ route('cart.add', $b->id) }}" method="POST" class="mt-2">
-                @csrf
-                <button class="btn btn-primary">Tambah ke Keranjang</button>
-              </form>
-              --}}
+                        <form action="{{ route('cart.add', $book->id) }}" method="POST" class="d-inline">
+                            @csrf
+                            <button type="submit" class="btn btn-primary">
+                                + Keranjang
+                            </button>
+                        </form>
+                    </div>
+                </div>
             </div>
-          </div>
         </div>
-      </div>
-    @else
-      <div class="alert alert-danger text-center">
-        Buku tidak ditemukan!
-      </div>
-    @endif
-  </div>
-
-  {{-- Bootstrap JS (optional, kalau butuh) --}}
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    </div>
 </body>
 </html>

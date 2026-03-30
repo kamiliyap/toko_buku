@@ -4,7 +4,9 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>@yield('title','Toko Buku Pintar')</title>
+    <title>@yield('title', $storeSettings['store_name'] ?? 'Toko Buku Pintar')</title>
+    <link rel="icon" type="image/png" href="{{ asset('images/logoweb/logoweb.png') }}">
+    <link rel="apple-touch-icon" href="{{ asset('images/logoweb/logoweb.png') }}">
 
     {{-- Bootstrap CSS (global untuk layout ini) --}}
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -33,6 +35,8 @@
 
     {{-- FOOTER --}}
     @includeIf('partials.footer')
+
+    @include('partials.service_chatbot')
 
     {{-- Bootstrap JS --}}
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>

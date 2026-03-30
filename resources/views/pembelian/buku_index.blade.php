@@ -1,533 +1,331 @@
-{{-- resources/views/layouts/app.blade.php --}}
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <title>@yield('title','Toko Buku Pintar')</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+@extends('layouts.user')
 
-    {{-- Bootstrap & Icons --}}
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+@section('title', 'Pembelian Buku')
+@section('nav_search_action', route('pembelian.buku_index'))
 
-    {{-- Global Styles (navbar + grid buku) --}}
-    <style>
-    :root{
-      --bg: #f4f6ff;       /* pakai warna bg seperti di home */
-      --card: #ffffff;
-      --muted: #64748b;
-      --primary: #2563eb;
-      --accent: #1e3a8a;
-      --radius: 12px;
+@section('styles')
+<style>
+    .purchase-shell {
+        max-width: 1240px;
+        margin: 0 auto;
+        padding: 28px 20px 44px;
     }
 
-    body{ background: var(--bg); }
-
-    /* ================= NAVBAR (SAMA SEPERTI HOME) ================= */
-    .main-nav{
-      background: #fff;
-      border-bottom: 1px solid #e5e7eb;
-      box-shadow: 0 3px 12px rgba(0,0,0,.06);
-      position: sticky;
-      top: 0;
-      z-index: 1200;
+    .purchase-hero {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 20px;
+        padding: 26px 28px;
+        border-radius: 24px;
+        background:
+            radial-gradient(circle at top left, rgba(255, 255, 255, 0.26), transparent 38%),
+            linear-gradient(135deg, #4f46e5, #2563eb 55%, #06b6d4);
+        color: #fff;
+        box-shadow: 0 18px 48px rgba(79, 70, 229, 0.22);
+        margin-bottom: 24px;
     }
 
-    .nav-container{
-      max-width:1200px;
-      margin:auto;
-      padding:12px 18px;
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:16px;
+    .purchase-hero h1 {
+        margin: 0 0 8px;
+        font-size: clamp(1.8rem, 3vw, 2.4rem);
+        font-weight: 800;
     }
 
-    .brand{
-      display:flex;
-      align-items:center;
-      gap:10px;
-      text-decoration:none;
-    }
-    .brand-icon{
-      width:44px;
-      height:44px;
-      border-radius:10px;
-      background:linear-gradient(135deg,#1e3a8a,#3b82f6);
-      display:inline-block;
-    }
-    .brand-title{
-      font-weight:700;
-      color:#0f172a;
-      font-size:18px;
-    }
-    .brand-subtitle{
-      font-size:12px;
-      color:var(--muted);
-      margin-top:2px;
+    .purchase-hero p {
+        margin: 0;
+        max-width: 680px;
+        color: rgba(255, 255, 255, 0.86);
     }
 
-    .nav-links{
-      display:flex;
-      gap:24px;
-      align-items:center;
-      flex:1;
-      justify-content:center;
-    }
-    .nav-links a{
-      color:#0f172a;
-      text-decoration:none;
-      font-weight:500;
-    }
-    .nav-links a.active{
-      font-weight:700;
-      border-bottom:2px solid var(--primary);
-      padding-bottom:2px;
+    .purchase-eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 10px;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        font-size: 0.76rem;
+        font-weight: 700;
+        color: rgba(255, 255, 255, 0.8);
     }
 
-    .nav-actions{
-      display:flex;
-      gap:14px;
-      align-items:center;
+    .purchase-stats {
+        min-width: 220px;
+        display: grid;
+        gap: 14px;
     }
 
-    /* search di navbar */
-    .nav-search {
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
-      margin-right:8px;
-    }
-    .nav-search-input {
-      height:36px;
-      padding:6px 12px;
-      border-radius:999px;
-      border:1px solid rgba(15,23,42,0.06);
-      min-width:200px;
-      background:#fff;
-    }
-    .nav-search-btn {
-      height:36px;
-      padding:0 10px;
-      border-radius:999px;
-      border:0;
-      background:var(--accent);
-      color:#fff;
-      display:inline-flex;
-      align-items:center;
-      justify-content:center;
-      cursor:pointer;
+    .purchase-stat-card {
+        padding: 16px 18px;
+        border-radius: 18px;
+        background: rgba(255, 255, 255, 0.14);
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        backdrop-filter: blur(8px);
     }
 
-    .cart{
-      background:var(--accent);
-      color:#fff;
-      padding:8px 12px;
-      border-radius:10px;
-      text-decoration:none;
-      font-weight:700;
-      display:inline-flex;
-      gap:8px;
-      align-items:center;
-    }
-    .cart span{
-      background:#ff3b30;
-      color:#fff;
-      padding:2px 6px;
-      border-radius:999px;
-      font-weight:700;
-      font-size:12px;
+    .purchase-stat-card strong {
+        display: block;
+        font-size: 1.7rem;
+        line-height: 1;
+        margin-bottom: 6px;
     }
 
-    .btn-buy{
-      background:#2563eb;
-      color:#fff;
-      padding:8px 18px;
-      border-radius:50px;
-      border:none;
-      font-weight:600;
-      text-decoration:none;
-    }
-    .btn-buy:hover{
-      background:#1d4ed8;
-      color:white;
+    .purchase-stat-card span {
+        color: rgba(255, 255, 255, 0.84);
     }
 
-    .hamburger{
-      display:none;
-      background:transparent;
-      border:0;
-      font-size:22px;
-      cursor:pointer;
-      padding:6px;
-      border-radius:8px;
+    .purchase-feedback {
+        margin-bottom: 18px;
     }
 
-    .mobile-menu{
-      display:none;
-      position:absolute;
-      left:0;
-      right:0;
-      top:100%;
-      background:#fff;
-      padding:12px 18px;
-      box-shadow:0 14px 40px rgba(11,15,33,0.08);
-    }
-    .mobile-menu.open{display:flex;flex-direction:column;}
-    .mobile-menu a{
-      display:block;
-      padding:10px 6px;
-      border-radius:8px;
-      text-decoration:none;
-      color:#0f172a;
-      font-weight:600;
-    }
-    .mobile-menu .btn-buy{
-      display:block;
-      text-align:center;
-      margin-top:6px;
-    }
-    .mobile-search {
-      display:flex;
-      gap:8px;
-      margin-top:8px;
-    }
-    .mobile-search .nav-search-input { flex:1; }
-
-    /* ================= GRID BUKU & KONTEN LISTING ================= */
-    .container-main{
-      max-width:1200px;
-      margin:22px auto;
-      padding:0 18px;
-    }
-    .page-top{
-      display:flex;
-      gap:12px;
-      align-items:center;
-      justify-content:space-between;
-      margin-bottom:18px;
-    }
-    .search-inline{
-      max-width:520px;
-      display:flex;
-      gap:8px;
-      align-items:center;
-    }
-    .input-search{
-      padding:8px 12px;
-      border-radius:10px;
-      border:1px solid rgba(15,23,42,0.06);
-      width:100%;
+    .search-result-banner {
+        margin-bottom: 18px;
+        padding: 14px 16px;
+        border-radius: 16px;
+        background: #e0f2fe;
+        color: #0f172a;
+        border: 1px solid #bae6fd;
     }
 
-    .card-book{
-    border-radius: 10px;
-    box-shadow:0 6px 16px rgba(11,15,33,0.06);
-    }
-    .card-book:hover{
-      transform:translateY(-6px);
-      box-shadow:0 18px 40px rgba(11,15,33,0.08);
-    }
-    .card-cover {
-    height: 170px;   /* lebih kecil */
-    }
-    .card-body{
-  padding:8px 10px;
-    }
-    .title-book{
-      font-size:14px;
-      font-weight:700;
-      color:#0f172a;
-      margin:0;
-      line-height:1.25;
-    }
-    .meta-book{
-      font-size:13px;
-      color:var(--muted);
-    }
-    .price{
-      color:var(--primary);
-      font-weight:800;
-    }
-    .card-actions{
-      display:flex;
-      gap:8px;
-      align-items:center;
-    }
-    .empty-card{
-      padding:28px;
-      border-radius:12px;
-      background:#fff;
-      text-align:center;
-      color:var(--muted);
+    .purchase-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+        gap: 22px;
     }
 
-    /* ================= RESPONSIVE ================= */
-    @media (max-width: 992px){
-      .card-cover{height:200px}
-      .nav-search-input { min-width:140px; }
+    .purchase-card {
+        background: #fff;
+        border: 0;
+        border-radius: 22px;
+        overflow: hidden;
+        box-shadow: 0 14px 36px rgba(15, 23, 42, 0.08);
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
     }
-    @media (max-width: 768px){
-      .nav-links{display:none}
-      .hamburger{display:inline-block}
-      .nav-actions .btn-buy{display:none}
-      .page-top{
-        flex-direction:column;
-        align-items:stretch;
-        gap:12px;
-      }
-      .search-inline{width:100%}
-      .nav-search{display:none}
+
+    .purchase-card:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 22px 50px rgba(15, 23, 42, 0.14);
     }
-    <style>
-  /* wrapper halaman */
-  .beli-wrapper{
-    max-width: 1200px;
-    margin: 24px auto;
-    padding: 0 16px 32px;
-  }
 
-  /* kartu buku pembelian */
-  .beli-card{
-    border-radius: 16px;
-    overflow: hidden;
-    box-shadow: 0 8px 24px rgba(15,23,42,0.06);
-    height: 50%;
-    display: flex;
-    flex-direction: column;
-  }
+    .purchase-cover-wrap {
+        background:
+            radial-gradient(circle at top left, rgba(96, 165, 250, 0.16), transparent 42%),
+            linear-gradient(180deg, #f8fafc, #eef2ff);
+        padding: 18px;
+    }
 
-  .beli-card-img{
-    width: 50%;
-    height: 50px;          /* <<< KECILIN DI SINI (boleh 180–220) */
-    object-fit: cover;      /* cover biar proporsional */
-  }
+    .purchase-cover {
+        width: 100%;
+        height: 250px;
+        object-fit: contain;
+        border-radius: 16px;
+        background: #fff;
+    }
 
-  .beli-card-body{
-    padding: 12px 16px 14px;
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-    flex: 1;
-  }
+    .purchase-body {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        padding: 18px 18px 20px;
+        flex: 1;
+    }
 
-  .beli-title{
-    font-size: 14px;
-    font-weight: 700;
-    margin-bottom: 2px;
-  }
-  .beli-author{
-    font-size: 12px;
-    color: #64748b;
-  }
-  .beli-price{
-    font-size: 14px;
-    font-weight: 800;
-    color: #2563eb;
-    margin-top: 6px;
-  }
+    .purchase-title {
+        margin: 0;
+        font-size: 1rem;
+        font-weight: 700;
+        line-height: 1.4;
+        color: #0f172a;
+    }
 
-  .beli-card-footer{
-    padding: 0 16px 14px 16px;
-  }
+    .purchase-author,
+    .purchase-publisher {
+        margin: 0;
+        color: #64748b;
+        font-size: 0.92rem;
+    }
 
-  .beli-btn{
-    width: 100%;
-    border-radius: 999px;
-    font-size: 14px;
-    padding: 8px 0;
-  }
-    </style>
+    .purchase-price {
+        margin-top: auto;
+        font-size: 1.3rem;
+        font-weight: 800;
+        color: #2563eb;
+    }
 
-    {{-- style tambahan per-halaman (home.css dll) --}}
-    @yield('styles')
-</head>
-<body>
+    .purchase-stock {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        width: fit-content;
+        padding: 6px 10px;
+        border-radius: 999px;
+        font-size: 0.84rem;
+        font-weight: 700;
+        background: #dcfce7;
+        color: #166534;
+    }
 
-    {{-- ================= NAVBAR (SAMA DI SEMUA HALAMAN) ================= --}}
-    @php
-        $cart = session('cart', []);
-        $cartCount = 0;
-        foreach ($cart as $item) $cartCount += $item['qty'];
-    @endphp
+    .purchase-stock.out {
+        background: #fee2e2;
+        color: #b91c1c;
+    }
 
-    <nav class="main-nav">
-      <div class="nav-container">
+    .purchase-card form {
+        margin-top: 8px;
+    }
 
-        {{-- Brand / Logo --}}
-        <a href="{{ route('home') }}" class="brand">
-          <span class="brand-icon"></span>
-          <span class="brand-title">Toko Buku Pintar</span>
-        </a>
+    .purchase-btn {
+        width: 100%;
+        padding: 12px 16px;
+        border: 0;
+        border-radius: 14px;
+        background: linear-gradient(135deg, #2563eb, #1d4ed8);
+        color: #fff;
+        font-weight: 700;
+        box-shadow: 0 10px 24px rgba(37, 99, 235, 0.2);
+    }
 
-        {{-- MENU DESKTOP --}}
-        <div class="nav-links">
-        <a href="{{ route('home') }}" 
-            class="{{ request()->routeIs('home') ? 'active' : '' }}">
-            Beranda
-        </a>
+    .purchase-empty {
+        padding: 44px 24px;
+        border-radius: 22px;
+        text-align: center;
+        background: #fff;
+        box-shadow: 0 14px 36px rgba(15, 23, 42, 0.08);
+    }
 
-        <a href="{{ route('user.buku.index') }}" 
-            class="{{ request()->routeIs('buku.*') ? 'active' : '' }}">
-            Daftar Buku
-        </a>
+    @media (max-width: 992px) {
+        .purchase-hero {
+            flex-direction: column;
+            align-items: flex-start;
+        }
 
-        {{-- MENU PEMBELIAN UNTUK USER --}}
-        <a href="{{ route('pembelian.buku_index') }}" 
-            class="{{ request()->routeIs('pembelian.*') ? 'active' : '' }}">
-            Pembelian
-        </a>
-        </div>
-        {{-- ACTIONS --}}
-        <div class="nav-actions">
+        .purchase-stats {
+            width: 100%;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        }
+    }
 
-          <form class="nav-search" method="GET" action="{{ route('buku.index') }}">
-            <input 
-              type="search" 
-              name="q" 
-              value="{{ request('q') }}" 
-              class="nav-search-input" 
-              placeholder="Cari buku..." 
-            >
-            <button class="nav-search-btn" type="submit">
-              <i class="bi bi-search"></i>
-            </button>
-          </form>
+    @media (max-width: 640px) {
+        .purchase-shell {
+            padding: 22px 16px 36px;
+        }
 
-          <a href="{{ route('cart.index') }}" class="cart">
-            <i class="bi bi-cart"></i>
-            <span>{{ $cartCount }}</span>
-          </a>
-          <button id="navToggle" class="hamburger" aria-label="Menu" aria-expanded="false">
-            ☰
-          </button>
-        </div>
-      </div>
+        .purchase-hero {
+            padding: 22px 20px;
+            border-radius: 20px;
+        }
 
-      {{-- MENU MOBILE --}}
-        <div id="mobileMenu" class="mobile-menu" aria-hidden="true">
-        <a href="{{ route('home') }}">Beranda</a>
-        <a href="{{ route('buku.index') }}">Daftar Buku</a>
+        .purchase-grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 16px;
+        }
 
-        {{-- LINK PEMBELIAN DI MOBILE --}}
-        <a href="{{ route('pembelian.buku_index') }}">Pembelian</a>
+        .purchase-cover {
+            height: 190px;
+        }
+    }
 
-        <a href="{{ route('cart.index') }}" class="cart mt-2">
-            <i class="bi bi-cart"></i>
-            <span>{{ $cartCount }}</span>
-        </a>
+    @media (max-width: 480px) {
+        .purchase-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+@endsection
 
-        <form class="mobile-search mt-2" method="GET" action="{{ route('buku.index') }}">
-          <input 
-            type="search" 
-            name="q" 
-            value="{{ request('q') }}" 
-            class="nav-search-input" 
-            placeholder="Cari buku..."
-          >
-          <button class="nav-search-btn" type="submit">
-            <i class="bi bi-search"></i>
-          </button>
-        </form>
-      </div>
-    </nav>
-     {{-- GRID 3 KOLOM --}}
-<div class="row g-4">
-    @foreach ($bukus as $b)
-    <div class="col-6 col-md-3 col-lg-3">
-        <div class="card-book shadow-sm">
-
-            {{-- COVER --}}
-            @php
-                // Ambil nama file dari database (hilangkan folder lamanya)
-                $imgFile = basename($b->gambar ?? '');
-
-                // Path final ke folder baru di public/images/buku
-                $imgUrl = $imgFile
-                    ? asset('images/buku/' . $imgFile)
-                    : asset('images/no-cover.png');
-            @endphp
-
-            <img src="{{ $imgUrl }}"
-                 alt="Cover {{ $b->judul }}"
-                 class="card-cover">
-
-            {{-- BODY --}}
-            <div class="card-body">
-                <h5 class="title-book">{{ $b->judul }}</h5>
-                <p class="meta-book mb-1">{{ $b->penulis }}</p>
-                <p class="price">Rp {{ number_format($b->harga, 0, ',', '.') }}</p>
-
-                {{-- ACTION --}}
-                <form action="{{ route('cart.add', $b->id) }}" method="POST">
-                    @csrf
-                    <button class="btn btn-primary w-100 mt-2">
-                        <i class="bi bi-cart-plus"></i> Tambah ke Keranjang
-                    </button>
-                </form>
+@section('content')
+<div class="purchase-shell">
+    <div class="purchase-hero">
+        <div>
+            <div class="purchase-eyebrow">
+                <i class="bi bi-bag-check"></i>
+                Halaman Pembelian
             </div>
+            <h1>Belanja buku dengan navbar yang sama seperti beranda</h1>
+            <p>
+                Pencarian buku dan akses keranjang sekarang sudah menyatu di navbar utama, jadi alurnya konsisten
+                dari beranda sampai checkout.
+            </p>
+        </div>
 
+        <div class="purchase-stats">
+            <div class="purchase-stat-card">
+                <strong>{{ $bukus->count() }}</strong>
+                <span>Buku siap dibeli</span>
+            </div>
+            <div class="purchase-stat-card">
+                <strong>{{ collect(session('cart', []))->sum('qty') }}</strong>
+                <span>Item di keranjang</span>
+            </div>
         </div>
     </div>
-    @endforeach
-</div>
 
+    <div class="purchase-feedback">
+        @if (session('success'))
+            <div class="alert alert-success">{{ session('success') }}</div>
+        @endif
 
-    {{-- KOSONG --}}
+        @if (session('error'))
+            <div class="alert alert-danger">{{ session('error') }}</div>
+        @endif
+    </div>
+
+    @if (request('q'))
+        <div class="search-result-banner">
+            Hasil pencarian untuk <strong>"{{ request('q') }}"</strong>.
+        </div>
+    @endif
+
     @if ($bukus->isEmpty())
-        <div class="empty-card mt-4">
-            Tidak ada buku ditemukan.
+        <div class="purchase-empty">
+            <h3 class="fw-bold mb-2">Buku yang kamu cari belum ditemukan</h3>
+            <p class="text-muted mb-4">Coba kata kunci lain atau kembali lihat semua koleksi pembelian.</p>
+            <a href="{{ route('pembelian.buku_index') }}" class="btn btn-primary px-4">Lihat semua buku</a>
+        </div>
+    @else
+        <div class="purchase-grid">
+            @foreach ($bukus as $b)
+                @php
+                    $imgFile = basename($b->gambar ?? '');
+                    $coverUrl = $imgFile ? asset('images/buku/' . $imgFile) : asset('images/no-cover.png');
+                    $fallback = asset('images/no-cover.png');
+                @endphp
+
+                <article class="purchase-card">
+                    <div class="purchase-cover-wrap">
+                        <img
+                            src="{{ $coverUrl }}"
+                            alt="Cover {{ $b->judul }}"
+                            class="purchase-cover"
+                            onerror="this.onerror=null;this.src='{{ $fallback }}';"
+                        >
+                    </div>
+
+                    <div class="purchase-body">
+                        <h2 class="purchase-title">{{ $b->judul }}</h2>
+                        <p class="purchase-author">{{ $b->penulis ?: 'Penulis belum tersedia' }}</p>
+                        <p class="purchase-publisher">{{ $b->penerbit ?: 'Penerbit belum tersedia' }}</p>
+                        <div class="purchase-price">Rp {{ number_format($b->harga ?? 0, 0, ',', '.') }}</div>
+                        <div class="purchase-stock {{ ($b->stok ?? 0) < 1 ? 'out' : '' }}">
+                            <i class="bi {{ ($b->stok ?? 0) < 1 ? 'bi-x-circle' : 'bi-check-circle' }}"></i>
+                            {{ ($b->stok ?? 0) < 1 ? 'Stok habis' : 'Stok tersedia: ' . ($b->stok ?? 0) }}
+                        </div>
+
+                        <form action="{{ route('cart.add', $b->id) }}" method="POST">
+                            @csrf
+                            <button type="submit" class="purchase-btn" {{ ($b->stok ?? 0) < 1 ? 'disabled' : '' }}>
+                                <i class="bi bi-cart-plus"></i>
+                                {{ ($b->stok ?? 0) < 1 ? 'Stok Habis' : 'Tambah ke Keranjang' }}
+                            </button>
+                        </form>
+                    </div>
+                </article>
+            @endforeach
         </div>
     @endif
 </div>
-    {{-- ================= KONTEN HALAMAN ================= --}}
-    <main>
-        @yield('content')
-    </main>
-
-    {{-- Bootstrap JS --}}
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-
-    {{-- Script toggle navbar mobile --}}
-    <script>
-    document.addEventListener('DOMContentLoaded', function () {
-      const btn = document.getElementById('navToggle');
-      const menu = document.getElementById('mobileMenu');
-
-      if (!btn || !menu) return;
-
-      function toggleMenu(open) {
-        const isOpen = typeof open === 'boolean'
-            ? open
-            : !menu.classList.contains('open');
-
-        if (isOpen) {
-          menu.classList.add('open');
-          menu.setAttribute('aria-hidden','false');
-          btn.setAttribute('aria-expanded','true');
-        } else {
-          menu.classList.remove('open');
-          menu.setAttribute('aria-hidden','true');
-          btn.setAttribute('aria-expanded','false');
-        }
-      }
-
-      btn.addEventListener('click', function(e){
-        e.stopPropagation();
-        toggleMenu();
-      });
-
-      document.addEventListener('click', function(e){
-        if (!menu.classList.contains('open')) return;
-        if (!menu.contains(e.target) && e.target !== btn) toggleMenu(false);
-      });
-
-      document.addEventListener('keydown', function(e){
-        if (e.key === 'Escape') toggleMenu(false);
-      });
-    });
-    </script>
-
-    @yield('scripts')
-</body>
-</html>
+@endsection

@@ -6,11 +6,12 @@ use Illuminate\Database\Eloquent\Model;
 
 class Penerbit extends Model
 {
-    protected $table = 'penerbit'; // nama tabel
+    protected $table = 'penerbit';
 
     protected $fillable = [
         'nama',
         'alamat',
-        'telepon'
+        'kontak',
+        'logo',
     ];
 }

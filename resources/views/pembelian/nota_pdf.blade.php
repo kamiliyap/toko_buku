@@ -45,6 +45,32 @@
         }
         .mt-2{ margin-top: 8px; }
         .mt-3{ margin-top: 12px; }
+        .barcode-wrap{
+            margin-top: 10px;
+            text-align: center;
+        }
+        .barcode-table{
+            border-collapse: collapse;
+            margin: 0 auto;
+        }
+        .barcode-table td{
+            padding: 0;
+            border: none;
+        }
+        .barcode-black{
+            background: #111827;
+        }
+        .barcode-space{
+            background: transparent;
+        }
+        .barcode-label{
+            margin-top: 8px;
+            text-align: center;
+            font-family: DejaVu Sans, Helvetica, Arial, sans-serif;
+            font-size: 12px;
+            color: #111827;
+            letter-spacing: 0.04em;
+        }
     </style>
 </head>
 <body>
@@ -54,6 +80,9 @@
 
     <div class="box">
         <div><span class="label">Kode Pesanan:</span> {{ $pesanan->kode_pesanan }}</div>
+        @if (!empty($barcodeHtml))
+            {!! $barcodeHtml !!}
+        @endif
         <div><span class="label">Nama:</span> {{ $pesanan->nama_pelanggan }}</div>
         <div><span class="label">No HP:</span> {{ $pesanan->no_hp ?? '-' }}</div>
         <div><span class="label">Alamat:</span> {{ $pesanan->alamat ?? '-' }}</div>

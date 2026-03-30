@@ -1,7 +1,8 @@
 {{-- resources/views/home.blade.php --}}
 @extends('layouts.user')
 
-@section('title', 'Toko Buku Pintar')
+@section('title', $storeSettings['store_name'] ?? 'Toko Buku Pintar')
+@section('nav_search_action', route('pembelian.buku_index'))
 @section('styles')
     <!-- BOOTSTRAP -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -15,9 +16,9 @@
 <!-- ================= Welcome Rotator ================= -->
 <div class="running-banner">
     <div class="running-track" id="runningTrack">
-        ⭐ Selamat datang di Toko Buku — Temukan bacaan terbaik setiap hari!  
-        ⭐ Cek promo terbaru dan diskon menarik minggu ini!  
-        ⭐ Rekomendasi buku pendidikan & literatur tersedia lengkap!
+         "Selamat datang di Toko Buku Pintar!” Temukan bacaan terbaik setiap hari!  
+         Cek promo terbaru dan diskon menarik minggu ini!  
+         Rekomendasi buku pendidikan & literatur tersedia lengkap!
     </div>
 </div>
 
@@ -36,8 +37,8 @@
     @endforelse
   </div>
   <div class="poster-controls">
-    <button class="prev" aria-label="Prev">‹</button>
-    <button class="next" aria-label="Next">›</button>
+    <button class="prev" aria-label="Prev"><</button>
+    <button class="next" aria-label="Next">></button>
   </div>
 </div>
 
@@ -46,8 +47,8 @@
   <section class="hero">
     <div class="hero-card fade-in delay-1">
       <div class="eyebrow">Selamat datang di</div>
-      <h1>Perpustakaan digital & toko buku lokal yang ramah</h1>
-      <p class="lead">Kurasi buku best seller, rekomendasi personal, dan penawaran dari penerbit terpercaya — semua dikemas rapi supaya mudah dicari.</p>
+      <h1>{{ $storeSettings['store_name'] ?? 'Toko Buku Pintar' }}</h1>
+      <p class="lead">Kurasi buku best seller, rekomendasi personal, dan penawaran dari penerbit terpercaya di Indonesia. Di Toko Buku Pintar” semua dikemas rapi supaya mudah dicari.</p>
 
       <div class="hero-ctas">
         <a class="btn" href="#best-seller">Lihat Best Seller</a>
@@ -94,6 +95,9 @@
           <div class="title" id="b{{ $b->id }}">{{ $b->judul }}</div>
           <div class="author">{{ $b->penulis }}</div>
           <div class="price">Rp {{ number_format($b->harga ?? 0, 0, ',', '.') }}</div>
+          <div style="margin-top:6px;font-size:12px;font-weight:700;color:{{ ($b->stok ?? 0) < 1 ? '#b91c1c' : '#166534' }};">
+            {{ ($b->stok ?? 0) < 1 ? 'Stok habis' : 'Stok tersedia: ' . ($b->stok ?? 0) }}
+          </div>
         </article>
       @empty
         <p>Tidak ada buku untuk ditampilkan.</p>
@@ -108,18 +112,30 @@
 
     <div class="publisher-slider" aria-label="Slider logo penerbit" id="pubSlider">
       <div class="slider-track">
-        @foreach($publishers as $p)
+        @forelse($publishers as $p)
+          @php
+            $defaultLogo = 'https://via.placeholder.com/120x60?text=No+Logo';
+            $logoPath = $p->logo ? asset('images/publishers/' . $p->logo) : $defaultLogo;
+          @endphp
           <div class="slide">
-            {{-- asumsi $p['logo'] = nama file, contoh: "erlangga.png" --}}
             <img
-              src="{{ asset('images/publishers/' . $p['logo']) }}"
-              alt="Logo {{ $p['name'] }}"
+              src="{{ $logoPath }}"
+              alt="Logo {{ $p->nama }}"
               class="slide-logo"
               loading="lazy"
-              onerror="this.onerror=null;this.src='https://via.placeholder.com/120x60?text=No+Logo';"
+              onerror="this.onerror=null;this.src='{{ $defaultLogo }}';"
             >
           </div>
-        @endforeach
+        @empty
+          <div class="slide">
+            <img
+              src="https://via.placeholder.com/120x60?text=No+Logo"
+              alt="Logo penerbit belum tersedia"
+              class="slide-logo"
+              loading="lazy"
+            >
+          </div>
+        @endforelse
       </div>
     </div>
   </section>
@@ -144,8 +160,12 @@
 <footer>
   <div class="ft-grid">
     <div>
-      <div style="font-weight:700">Toko Buku Pintar</div>
-      <div style="color:var(--muted);margin-top:8px">Alamat kantor pusat • Email: halo@tokobukupintar.id</div>
+      <div style="font-weight:700">{{ $storeSettings['store_name'] ?? 'Toko Buku Pintar' }}</div>
+      <div style="color:var(--muted);margin-top:8px">
+        Alamat kantor pusat: {{ $storeSettings['address'] ?? 'Jl. Pintar No. 1, Jakarta Selatan' }}
+        Email: {{ $storeSettings['contact_email'] ?? 'halo@tokobukupintar.id' }}
+        Telepon: {{ $storeSettings['contact_phone'] ?? '+62 812-3456-7890' }}
+      </div>
       <div style="margin-top:14px" class="socials">
         <a href="#" aria-label="Instagram">IG</a>
         <a href="#" aria-label="Facebook">FB</a>
@@ -185,7 +205,7 @@ document.addEventListener('DOMContentLoaded', function () {
       } else {
         a.style.display = 'block';
         q.setAttribute('data-open','true');
-        btn.textContent = '−';
+        btn.textContent = '>';
         btn.setAttribute('aria-expanded','true');
       }
     });
@@ -280,3 +300,4 @@ document.addEventListener('DOMContentLoaded', function () {
 
 </script>
 @endsection
+
